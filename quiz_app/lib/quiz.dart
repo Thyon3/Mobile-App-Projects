@@ -45,6 +45,13 @@ class _QuizState extends State<Quiz> {
     }
   }
 
+  void restartQuiz() {
+    setState(() {
+      selectedAnswers.clear();
+      activeScreen = 'start-screen';
+    });
+  }
+
   @override
   Widget build(context) {
     Widget screenWidget = StartScreen(
@@ -55,8 +62,9 @@ class _QuizState extends State<Quiz> {
       ); // we will pass  chooseAnswer ot QuestionScreen cause QuestionScreen will use the fuction chooseAnswer inside of it
     } else if (activeScreen == 'result-screen') {
       screenWidget = ResultsScreen(
-          chosenAnswers:
-              selectedAnswers); //passing the resultsScreen() to screen widget to show the results screen when all the questions are answerd
+        chosenAnswers: selectedAnswers,
+        restartQuiz: restartQuiz,
+      ); //passing the resultsScreen() to screen widget to show the results screen when all the questions are answerd
       //and also we ar passing the list of selected answers to a variable called chosen answers inside of the resultsscreen cause resultscren is going to use it
     }
     return MaterialApp(
