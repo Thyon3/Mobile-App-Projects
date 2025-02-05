@@ -25,7 +25,7 @@ class ExpenseItem extends StatelessWidget {
                 const Spacer() /* takes all the remaining space which is available between the widgets it is in */,
                 Row(
                   children: [
-                    Icon(cateoryIcons[expense.category]),
+                    Icon(cateoryIcons[expense.CategoryTwo]),
                     SizedBox(
                       width: 8,
                     ),

@@ -1,10 +1,10 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl/number_symbols_data.dart';
+import 'package:intl/intl.dart';
+import 'package:expense_tracker_mobile_app/Models/expense.dart';
 
 class NewExpense extends StatefulWidget {
+  NewExpense({super.key, required this.onAddExpense});
+  final void Function(Expense expense) onAddExpense;
   @override
   State<NewExpense> createState() {
     return _NewExpenseState();
@@ -22,7 +22,12 @@ class _NewExpenseState extends State<NewExpense> {
   // we can use the manually saving the text input method or we can let flutter do the work by the likt the following
   final _titleController = TextEditingController();
   final _amountController = TextEditingController();
-  // we have to ovrride the dispose method here
+  DateTime? _selectedDate;
+  CategoryOne _selectedCategory =
+      CategoryOne.leisure; //intillay set the _selectedCategory to leisure
+  var formatter =
+      DateFormat.yMd(); // we have to ovrride the dispose method here
+
   void dispose() {
     _titleController.dispose();
     _amountController.dispose();
@@ -30,18 +35,61 @@ class _NewExpenseState extends State<NewExpense> {
   }
 
   // a function ot show the calender or the date picker for selecting the date
-  void presentDatePicker() {
+  void presentDatePicker() async {
     final now = DateTime.now();
     final fistDate = DateTime(now.year - 1, now.month, now.day);
     // we can usea built in funciton to show a date picker for selecting a date
-    showDatePicker(
+    final pickedDate = await showDatePicker(
         context: context, initialDate: now, firstDate: fistDate, lastDate: now);
+    setState(() {
+      _selectedDate = pickedDate;
+    });
+  }
+
+  //deifining the submit function for user input validation
+  void _submitExpenseData() {
+    //check whether the user inputs a not null value or not
+    final enteredAmount = double.tryParse(_amountController
+        .text); //tryParse(hellp)=> null  tryParse(11.2) => 11.2
+
+    final isEnteredAmountValid = enteredAmount == null ||
+        enteredAmount <= 0; // amount should be a positive integer
+
+    if (_titleController.text.trim().isEmpty ||
+        isEnteredAmountValid ||
+        _selectedDate == null) {
+      // use the built in showDialogue widget
+      showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+                title: Text('Invalid Input'),
+                content: Text(
+                    'Please make sure a valid title, amount, date and category was entered. Ena demo mnshe new kes bel enji Nigga'),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Eshi Man'))
+                ],
+              ));
+      return;
+    }
+    // we have to use the widget property to accesst the methods or variables that are defined in the NewExpense class since we are in _StateNewExpense class
+    // call the addExpense function on submission
+
+    widget.onAddExpense(Expense(
+        title: _titleController.text,
+        amount: enteredAmount,
+        date: _selectedDate!,
+        CategoryTwo: _selectedCategory));
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.fromLTRB(16, 50, 16, 16),
       child: Column(
         children: [
           // textfield to enter the title of the expense
@@ -73,7 +121,9 @@ class _NewExpenseState extends State<NewExpense> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text('selected date'),
+                  Text(_selectedDate != null
+                      ? formatter.format(_selectedDate!)
+                      : 'No Date Chosen'),
                   IconButton(
                       onPressed: presentDatePicker,
                       icon: Icon(Icons.calendar_month))
@@ -81,19 +131,44 @@ class _NewExpenseState extends State<NewExpense> {
               ))
             ],
           ),
+          SizedBox(
+            height: 16,
+          ),
 
           // canceling and submmitting buttons
 
           Row(
             children: [
+              // drop down button for the CategoryOne selection
+              DropdownButton(
+                  // since we are saving the recent selectedCategory we can show it
+                  value: _selectedCategory,
+                  items: CategoryOne.values
+                      .map((CategoryOne) => DropdownMenuItem(
+                          value: CategoryOne,
+                          child: Text(CategoryOne.name.toUpperCase())))
+                      .toList(),
+                  onChanged: (value) {
+                    // now value should never  be null if we want to assign it to _selectedCategory
+                    if (value == null) {
+                      return;
+                    }
+                    setState(() {
+                      _selectedCategory = value;
+                    });
+                  }),
+              Spacer(),
               TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
                   child: Text('Cancel')),
-              Spacer(),
+              SizedBox(
+                width: 15,
+              ),
               ElevatedButton(
-                  onPressed: () {}, child: const Text('Save Expense'))
+                  onPressed: _submitExpenseData,
+                  child: const Text('Save Expense'))
             ],
           )
         ],

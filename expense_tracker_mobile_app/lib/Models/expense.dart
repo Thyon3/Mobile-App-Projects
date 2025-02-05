@@ -8,14 +8,14 @@ final uuid = Uuid();
 // create an object called formatter using the class Dateformat
 final formatter = DateFormat.yMd();
 
-enum Category { food, travel, leisure, work }
-// lets have a specifc icon for each category for that we will use Map
+enum CategoryOne { food, travel, leisure, work }
+// lets have a specifc icon for each CategoryOne for that we will use Map
 
 const cateoryIcons = {
-  Category.food: Icons.lunch_dining,
-  Category.travel: Icons.flight_takeoff,
-  Category.leisure: Icons.movie,
-  Category.work: Icons.work,
+  CategoryOne.food: Icons.lunch_dining,
+  CategoryOne.travel: Icons.flight_takeoff,
+  CategoryOne.leisure: Icons.movie,
+  CategoryOne.work: Icons.work,
 };
 
 class Expense {
@@ -24,7 +24,7 @@ class Expense {
     required this.title,
     required this.amount,
     required this.date,
-    required this.category,
+    required this.CategoryTwo,
   }) : /* we can intialize every variable we want which 
   is found in class using this  giving id a unique id every time an expense is created*/
         id = uuid
@@ -36,7 +36,7 @@ class Expense {
       id; // a unique id for each expense we have which is needed to delete or update an expense
   final DateTime date;
   //a built in type Date tiem used ot add a date variable for hte expanses
-  final Category category;
+  final CategoryOne CategoryTwo;
 
   // define a getter method to return the formatteddate
 
