@@ -19,6 +19,10 @@ class ExpensesList extends StatelessWidget {
         // returns a widget
         // this function is called the number of times equal to itemCount if itemCount is 2 hten the function will be called twice
         return Dismissible(
+            // we can also give a background color for the dismissible object and change the backgorund as we delete an expense by swapping it to the left
+            background: Container(
+              color: Theme.of(context).colorScheme.error,
+            ),
             key: ValueKey(registeredExpenses[index]),
             onDismissed: (direction) {
               onSwiped(registeredExpenses[index]);

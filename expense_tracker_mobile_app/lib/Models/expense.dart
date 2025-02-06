@@ -46,7 +46,29 @@ class Expense {
   }
 }
 
+// to have a unique id for each expense we can use a third party package
+// which can help us to produce a unique id for each expense which is called the uuid pakcage
+// we can install it using the command: flutter pub add uuid
 
-// to have a unique id for each expense we can use a third party package 
-// which can help us to produce a unique id for each expense which is called the uuid pakcage 
-// we can install it using the command: flutter pub add uuid 
+// Now to build the chart we need another data model
+class ExpenseBucket {
+  const ExpenseBucket({required this.category, required this.expenses});
+
+  //i needto add an extra constructor in the class
+  ExpenseBucket.forCategory(List<Expense> allExpenses, this.category)
+      : expenses = allExpenses
+            .where((expense) => expense.CategoryTwo == category)
+            .toList();
+  final CategoryOne category;
+  final List<Expense> expenses;
+
+  //add a getter to return the total expense that we have
+
+  double get totalExpenses {
+    double sum = 0;
+    for (final expense in expenses) {
+      sum += expense.amount;
+    }
+    return sum;
+  }
+}
