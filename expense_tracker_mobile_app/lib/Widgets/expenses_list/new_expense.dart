@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:expense_tracker_mobile_app/Models/expense.dart';
 
 class NewExpense extends StatefulWidget {
-  NewExpense({super.key, required this.onAddExpense});
+  const NewExpense({super.key, required this.onAddExpense});
   final void Function(Expense expense) onAddExpense;
   @override
   State<NewExpense> createState() {
@@ -28,6 +28,7 @@ class _NewExpenseState extends State<NewExpense> {
   var formatter =
       DateFormat.yMd(); // we have to ovrride the dispose method here
 
+  @override
   void dispose() {
     _titleController.dispose();
     _amountController.dispose();
@@ -88,91 +89,96 @@ class _NewExpenseState extends State<NewExpense> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(16, 50, 16, 16),
-      child: Column(
-        children: [
-          // textfield to enter the title of the expense
-          TextField(
-            // we will add another method to save the changes of the text field or simply to store the user input
-            // onChanged: _saveTitleInput,
-            controller: _titleController,
-            maxLength: 50,
-            // we can put the label or the text before the text field using the decoartion
-            decoration: InputDecoration(label: Text('title')),
-          ),
-          // text field to add the amount of the expense
-
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _amountController,
-                  decoration: InputDecoration(
-                      label: Text('Amount: '), prefixText: '\$ '),
-                  keyboardType: TextInputType.number,
-                ),
-              ),
-              const SizedBox(
-                width: 20,
-              ),
-              Expanded(
-                  child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.center,
+    final keyboardSpace = MediaQuery.of(context)
+        .viewInsets
+        .bottom; // this gives us UI elemnents that overlap with another UI elemetns from hte bottom of the screen like the text key board in landscape mode
+    return SingleChildScrollView(
+        child: Padding(
+            padding: EdgeInsets.fromLTRB(16, 50, 16, keyboardSpace + 16),
+            child: Expanded(
+              child: Column(
                 children: [
-                  Text(_selectedDate != null
-                      ? formatter.format(_selectedDate!)
-                      : 'No Date Chosen'),
-                  IconButton(
-                      onPressed: presentDatePicker,
-                      icon: Icon(Icons.calendar_month))
+                  // textfield to enter the title of the expense
+                  TextField(
+                    // we will add another method to save the changes of the text field or simply to store the user input
+                    // onChanged: nand ghe gitsaveTitleInput,
+                    controller: _titleController,
+                    maxLength: 50,
+                    // we can put the label or the text before the text field using the decoartion
+                    decoration: InputDecoration(label: Text('title')),
+                  ),
+                  // text field to add the amount of the expense
+
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _amountController,
+                          decoration: InputDecoration(
+                              label: Text('Amount: '), prefixText: '\$ '),
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Expanded(
+                          child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(_selectedDate != null
+                              ? formatter.format(_selectedDate!)
+                              : 'No Date Chosen'),
+                          IconButton(
+                              onPressed: presentDatePicker,
+                              icon: Icon(Icons.calendar_month))
+                        ],
+                      ))
+                    ],
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+
+                  // canceling and submmitting buttons
+
+                  Row(
+                    children: [
+                      // drop down button for the CategoryOne selection
+                      DropdownButton(
+                          // since we are saving the recent selectedCategory we can show it
+                          value: _selectedCategory,
+                          items: CategoryOne.values
+                              .map((CategoryOne) => DropdownMenuItem(
+                                  value: CategoryOne,
+                                  child: Text(CategoryOne.name.toUpperCase())))
+                              .toList(),
+                          onChanged: (value) {
+                            // now value should never  be null if we want to assign it to _selectedCategory
+                            if (value == null) {
+                              return;
+                            }
+                            setState(() {
+                              _selectedCategory = value;
+                            });
+                          }),
+                      Spacer(),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text('Cancel')),
+                      SizedBox(
+                        width: 15,
+                      ),
+                      ElevatedButton(
+                          onPressed: _submitExpenseData,
+                          child: const Text('Save Expense'))
+                    ],
+                  )
                 ],
-              ))
-            ],
-          ),
-          SizedBox(
-            height: 16,
-          ),
-
-          // canceling and submmitting buttons
-
-          Row(
-            children: [
-              // drop down button for the CategoryOne selection
-              DropdownButton(
-                  // since we are saving the recent selectedCategory we can show it
-                  value: _selectedCategory,
-                  items: CategoryOne.values
-                      .map((CategoryOne) => DropdownMenuItem(
-                          value: CategoryOne,
-                          child: Text(CategoryOne.name.toUpperCase())))
-                      .toList(),
-                  onChanged: (value) {
-                    // now value should never  be null if we want to assign it to _selectedCategory
-                    if (value == null) {
-                      return;
-                    }
-                    setState(() {
-                      _selectedCategory = value;
-                    });
-                  }),
-              Spacer(),
-              TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text('Cancel')),
-              SizedBox(
-                width: 15,
               ),
-              ElevatedButton(
-                  onPressed: _submitExpenseData,
-                  child: const Text('Save Expense'))
-            ],
-          )
-        ],
-      ),
-    );
+            )));
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracker_mobile_app/expenses.dart';
+import 'package:flutter/services.dart';
 
+// we need the services.dart file to find some functinalities which help us to lock the orientation of the screen like fixed portrait or landscape mode
 var kColorScheme =
     ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 96, 56, 181));
 // adding a dark mode to our app
@@ -9,6 +11,10 @@ var kDarkscheme = ColorScheme.fromSeed(
   seedColor: Color.fromARGB(255, 5, 99, 125),
 );
 void main() {
+  // Locking the screen orientaition to portrait mode
+  // SystemChrome.setPreferredOrientations([
+  //   DeviceOrientation.portraitUp,
+  // ]).then((fn) {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false, // Removes debug banner
     // we can use a darkTheme constructor to use the dark mode
@@ -52,4 +58,5 @@ void main() {
         .system, // check the user system setting for dark or light mode and then apply that setting
     home: Expenses(),
   ));
+  // });
 }

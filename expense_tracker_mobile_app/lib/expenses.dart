@@ -1,3 +1,7 @@
+import 'dart:ui';
+
+import 'package:expense_tracker_mobile_app/Models/chart/chart.dart';
+import 'package:expense_tracker_mobile_app/Models/chart/chart_bar.dart';
 import 'package:expense_tracker_mobile_app/Models/expense.dart';
 import 'package:expense_tracker_mobile_app/Widgets/expenses_list/expenses_list.dart';
 import 'package:expense_tracker_mobile_app/Widgets/expenses_list/new_expense.dart';
@@ -36,6 +40,8 @@ class _ExpensesState extends State<Expenses> {
   void _openAddExpenseOverlay() {
 //  we can use some built in functions to show some UI elements when this function is called
     showModalBottomSheet(
+        // we can make this screen layout out of the devices contents like the camera
+        useSafeArea: true,
         isScrollControlled:
             true, //will make the showModalBottomSheet contain the full screen
         context: context,
@@ -78,6 +84,11 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(BuildContext context) {
+    // to have a responsive layout for portrait and landscape modes we first want to know the width of the screen available
+    final width = MediaQuery.of(context)
+        .size
+        .width; //flutter rebuild the build method when we rotate the screen
+
     // if there are no any expenses available we want to show the user a text to add ne expenses and try again
 
     Widget mainContent = Center(
@@ -96,13 +107,27 @@ class _ExpensesState extends State<Expenses> {
           ],
           title: Text('Flutter Expense Tracker'),
         ),
-        body: Column(
-          children: [
-            Text('The Expense chart'),
-            Expanded(
-              child: mainContent,
-            )
-          ],
-        ));
+        body: width < 600
+            ? Column(
+                children: [
+                  Chart(
+                      expenses:
+                          _registeredExpenses), // chart view of the expenses
+                  Expanded(
+                    child: mainContent, // the expenses list
+                  )
+                ],
+              )
+            : Row(
+                children: [
+                  // since both chart and row use width = double.infinity there is an error so to solve that we can wrap chart in expanded
+                  Expanded(
+                    child: Chart(expenses: _registeredExpenses),
+                  ), // chart view of the expenses
+                  Expanded(
+                    child: mainContent, // the expenses list
+                  )
+                ],
+              ));
   }
 }
