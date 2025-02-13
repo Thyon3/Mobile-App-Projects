@@ -24,9 +24,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: theme,
-        home: MealsScreen(
-            title: dummyMeals[1].title, meals: dummyMeals) // Todo ...,
-        );
+      theme: theme, home: CategoriesScreen(), // Todo ...,
+    );
   }
 }

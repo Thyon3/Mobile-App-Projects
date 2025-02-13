@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:healthy_meals_app/Models/category.dart';
 
 class CategoryGridItem extends StatelessWidget {
-  CategoryGridItem({super.key, required this.category});
+  CategoryGridItem(
+      {super.key, required this.category, required this.onSelectCategory});
 
   final Category category;
+  final void Function() onSelectCategory;
 
   @override
   Widget build(context) {
     // we can make any widget tappable by wrapping that widget with InkWell
     return InkWell(
-      onTap: () {},
+      onTap: onSelectCategory,
       // to get a color change when we tab the widget
       splashColor: Theme.of(context).primaryColor,
       child: Container(

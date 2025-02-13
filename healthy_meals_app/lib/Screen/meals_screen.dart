@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:healthy_meals_app/Models/meal.dart';
+import 'package:healthy_meals_app/Widgets/meal_item.dart';
+import 'package:healthy_meals_app/Screen/meal_detail.dart';
 
 class MealsScreen extends StatelessWidget {
   const MealsScreen({
@@ -8,6 +10,13 @@ class MealsScreen extends StatelessWidget {
     required this.meals,
   });
 
+  void selectMeal(Meal meal, BuildContext context) {
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => MealDetail(
+              meal: meal,
+            )));
+  }
+
   // we want to accept the meals list from our model meals
   final List<Meal> meals;
   // we also need the name or the title of hte category in which the meal is in
@@ -15,9 +24,14 @@ class MealsScreen extends StatelessWidget {
 
   Widget build(context) {
     Widget content = ListView.builder(
-      itemCount: meals.length,
-      itemBuilder: (context, index) => Text(meals[index].title),
-    );
+        itemCount: meals.length,
+        itemBuilder: (context, index) => MealItem(
+              meal: meals[index],
+              onSelectMeal: (meal) {
+                selectMeal(meal, context);
+              },
+            ));
+
     if (meals.isEmpty) {
       content = Center(
           child: Column(
