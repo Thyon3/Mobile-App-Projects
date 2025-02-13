@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:healthy_meals_app/Screen/Categories_Screen.dart';
+import 'package:healthy_meals_app/Screen/filters.dart';
 import 'package:healthy_meals_app/Screen/meals_screen.dart';
 import 'package:healthy_meals_app/Models/meal.dart';
 import 'package:healthy_meals_app/Widgets/mainDrawer.dart';
@@ -26,6 +27,14 @@ class _TabsScreenState extends State<TabsScreen> {
     setState(() {
       _selectedPageIndex = index;
     });
+  }
+
+  void _setScreen(String identifier) {
+    Navigator.of(context).pop();
+    if (identifier == 'filters') {
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => Filters()));
+    }
   }
 
   // showing info message
@@ -71,7 +80,9 @@ class _TabsScreenState extends State<TabsScreen> {
         appBar: AppBar(
           title: Text(activePageTitle),
         ),
-        drawer: Maindrawer(),
+        drawer: Maindrawer(setScreen: () {
+          _setScreen('filters');
+        }),
         body: activeScreen,
         bottomNavigationBar: BottomNavigationBar(
           // we have the onTab property whenever the tabs are clicked

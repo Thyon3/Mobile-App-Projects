@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class Maindrawer extends StatelessWidget {
-  Maindrawer({super.key});
+  Maindrawer({super.key, required this.setScreen});
+
+  final void Function() setScreen;
 
   Widget build(context) {
     return Drawer(
@@ -64,7 +66,7 @@ class Maindrawer extends StatelessWidget {
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
                   ),
             ),
-            onTap: () {},
+            onTap: setScreen,
           ),
           ListTile(
             leading: Icon(
