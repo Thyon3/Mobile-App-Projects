@@ -3,9 +3,12 @@ import 'package:healthy_meals_app/Widgets/category_grid_item.dart';
 import 'package:healthy_meals_app/data/dummy_data.dart';
 import 'package:healthy_meals_app/Screen/meals_screen.dart';
 import 'package:healthy_meals_app/Models/category.dart';
+import 'package:healthy_meals_app/Models/meal.dart';
 
 class CategoriesScreen extends StatelessWidget {
-  const CategoriesScreen({super.key});
+  const CategoriesScreen({super.key, required this.OntoggleFavourite});
+
+  final void Function(Meal meal) OntoggleFavourite;
 
   //lets add a function to push a screen in to the available stack of screens
   // we want to display hte meal details in each category so on _selectcategory function we accept the type of category that was tapped
@@ -19,6 +22,7 @@ class CategoriesScreen extends StatelessWidget {
         builder: (ctx) => MealsScreen(
               title: category.title,
               meals: filteredMeals,
+              onToggleFavourite: OntoggleFavourite,
             )));
   }
 
