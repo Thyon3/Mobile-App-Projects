@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:healthy_meals_app/Screen/Categories_Screen.dart';
 import 'package:healthy_meals_app/Screen/meals_screen.dart';
+import 'package:healthy_meals_app/Screen/tabs.dart';
 import 'package:healthy_meals_app/data/dummy_data.dart';
 
 final theme = ThemeData(
@@ -24,7 +25,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: theme, home: CategoriesScreen(), // Todo ...,
+      theme: theme, home: TabsScreen(), // Todo ...,
     );
   }
 }

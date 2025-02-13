@@ -6,7 +6,7 @@ import 'package:healthy_meals_app/Screen/meal_detail.dart';
 class MealsScreen extends StatelessWidget {
   const MealsScreen({
     super.key,
-    required this.title,
+    this.title,
     required this.meals,
   });
 
@@ -20,7 +20,7 @@ class MealsScreen extends StatelessWidget {
   // we want to accept the meals list from our model meals
   final List<Meal> meals;
   // we also need the name or the title of hte category in which the meal is in
-  final String title;
+  final String? title;
 
   Widget build(context) {
     Widget content = ListView.builder(
@@ -53,9 +53,12 @@ class MealsScreen extends StatelessWidget {
         ],
       ));
     }
+    if (title == null) {
+      return content;
+    }
     return Scaffold(
         appBar: AppBar(
-          title: Text(title),
+          title: Text(title!),
         ),
         body: content);
   }
