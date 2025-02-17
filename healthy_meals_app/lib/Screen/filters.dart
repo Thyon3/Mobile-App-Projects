@@ -1,26 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class Filters extends StatefulWidget {
-  Filters({super.key});
+import 'package:healthy_meals_app/Providers/filters_provider.dart';
+
+class Filters extends ConsumerStatefulWidget {
+  Filters({super.key, required this.currentFilters});
+
+  final Map<Filter, bool> currentFilters;
   @override
-  State<StatefulWidget> createState() {
+  ConsumerState<Filters> createState() {
     // TODO: implement createState
     return _FiltersState();
   }
 }
 
-enum Filter {
-  glutenFree,
-  lactoseFree,
-  vegetarian,
-  vegan,
-}
-
-class _FiltersState extends State<Filters> {
+class _FiltersState extends ConsumerState<Filters> {
   var _gluttenFreeSet = false;
   var _lactoseFreeSet = false;
   var _vegetarianFilterSet = false;
   var _veganFilterSet = false;
+
+  @override
+  void initState() {
+    final activeFilter = ref.watch();
+    _gluttenFreeSet = activeFilter[Filter.glutenFree] ?? false;
+    _lactoseFreeSet = activeFilter[Filter.lactoseFree] ?? false;
+    _vegetarianFilterSet = activeFilter[Filter.vegetarian] ?? false;
+    _veganFilterSet = activeFilter[Filter.vegan] ?? false;
+    super.initState();
+  }
+
   @override
   // TODO: implement widget
   Widget build(context) {
@@ -30,13 +39,13 @@ class _FiltersState extends State<Filters> {
       ),
       body: WillPopScope(
         onWillPop: () async {
-          Navigator.of(context).pop({
+          ref.read(filtersProvider.notifier).setFilters({
             Filter.glutenFree: _gluttenFreeSet,
             Filter.lactoseFree: _lactoseFreeSet,
             Filter.vegan: _veganFilterSet,
             Filter.vegetarian: _vegetarianFilterSet,
           });
-          return false;
+          return true;
         },
         child: Column(
           children: [

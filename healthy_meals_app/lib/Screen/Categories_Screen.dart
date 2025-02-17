@@ -6,23 +6,21 @@ import 'package:healthy_meals_app/Models/category.dart';
 import 'package:healthy_meals_app/Models/meal.dart';
 
 class CategoriesScreen extends StatelessWidget {
-  const CategoriesScreen({super.key, required this.OntoggleFavourite});
-
-  final void Function(Meal meal) OntoggleFavourite;
+  const CategoriesScreen({super.key, required this.availableMeals});
+  final List<Meal> availableMeals;
 
   //lets add a function to push a screen in to the available stack of screens
   // we want to display hte meal details in each category so on _selectcategory function we accept the type of category that was tapped
   void _selectCategory(BuildContext context, Category category) {
     //now we want to get a list of meals with A Category of category
 
-    final filteredMeals = dummyMeals
+    final filteredMeals = availableMeals
         .where((meal) => meal.categories.contains(category.id))
         .toList();
     Navigator.of(context).push(MaterialPageRoute(
         builder: (ctx) => MealsScreen(
               title: category.title,
               meals: filteredMeals,
-              onToggleFavourite: OntoggleFavourite,
             )));
   }
 
