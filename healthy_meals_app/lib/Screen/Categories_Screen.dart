@@ -28,6 +28,7 @@ class _CategoriesScreenState extends State<CategoriesScreen>
       lowerBound: 0,
       upperBound: 1,
     );
+    _animationController.forward(); //start the animation manually
   }
 
   //lets add a function to push a screen in to the available stack of screens
@@ -47,25 +48,32 @@ class _CategoriesScreenState extends State<CategoriesScreen>
   @override
   Widget build(context) {
     // if you are building a multi screen app then every screen should use a scaffold widget to return
-    return GridView(
-      // creates a  grid view element with two columns
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 3 / 2,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
+    return AnimatedBuilder(
+      animation: _animationController,
+      child: GridView(
+        // creates a  grid view element with two columns
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 3 / 2,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+        ),
+        padding: EdgeInsets.all(16),
+        children: [
+          // availbalbleCategories.map(category) =>( CategoryGridItem(catgory: category)).toList();  we can also use map
+          for (final category in availableCategories)
+            CategoryGridItem(
+              category: category,
+              onSelectCategory: () {
+                _selectCategory(context, category);
+              },
+            )
+        ],
       ),
-      padding: EdgeInsets.all(16),
-      children: [
-        // availbalbleCategories.map(category) =>( CategoryGridItem(catgory: category)).toList();  we can also use map
-        for (final category in availableCategories)
-          CategoryGridItem(
-            category: category,
-            onSelectCategory: () {
-              _selectCategory(context, category);
-            },
-          )
-      ],
+      builder: (context, child) => Padding(
+        child: child,
+        padding: EdgeInsets.only(top: 100 - _animationController.value * 100),
+      ),
     );
   }
 }
