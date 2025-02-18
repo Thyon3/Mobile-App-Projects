@@ -6,7 +6,6 @@ import 'package:healthy_meals_app/Screen/filters.dart';
 import 'package:healthy_meals_app/Screen/meals_screen.dart';
 import 'package:healthy_meals_app/Models/meal.dart';
 import 'package:healthy_meals_app/Widgets/mainDrawer.dart';
-import 'package:healthy_meals_app/Providers/meal_provider.dart';
 import 'package:healthy_meals_app/Providers/favourites_provider.dart';
 import 'package:healthy_meals_app/Providers/filters_provider.dart';
 
@@ -45,40 +44,17 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
   void _setScreen(String identifier) async {
     Navigator.of(context).pop();
     if (identifier == 'filters') {
-      final result =
-          await Navigator.of(context).push<Map<Filter, bool>>(MaterialPageRoute(
-              builder: (context) => Filters(
-                    currentFilters: _selectedFilters,
-                  )));
-      setState(() {
-        _selectedFilters = result ??
-            kIntialFilters; // if result is null we will assign _selectedFilters = kIntialFitlers
-      });
+      await Navigator.of(context).push<Map<Filter, bool>>(MaterialPageRoute(
+          builder: (context) => Filters(
+                currentFilters: _selectedFilters,
+              )));
     }
   }
 
   @override
   // TODO: implement widget
   Widget build(context) {
-    final meals = ref.watch(mealsProvider);
-    // we will have a variable to pass the filtered meals to the catagories screen
-    final availableMeals = meals.where((meal) {
-      {
-        if (_selectedFilters[Filter.glutenFree]! && !meal.isGlutenFree) {
-          return false;
-        }
-        if (_selectedFilters[Filter.lactoseFree]! && !meal.isLactoseFree) {
-          return false;
-        }
-        if (_selectedFilters[Filter.vegetarian]! && !meal.isVegetarian) {
-          return false;
-        }
-        if (_selectedFilters[Filter.vegan]! && !meal.isVegan) {
-          return false;
-        }
-        return true;
-      }
-    }).toList();
+    final availableMeals = ref.watch(fitleredMealsProvider);
     Widget activeScreen = CategoriesScreen(
       availableMeals: availableMeals,
     );

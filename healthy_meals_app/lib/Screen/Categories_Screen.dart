@@ -5,16 +5,36 @@ import 'package:healthy_meals_app/Screen/meals_screen.dart';
 import 'package:healthy_meals_app/Models/category.dart';
 import 'package:healthy_meals_app/Models/meal.dart';
 
-class CategoriesScreen extends StatelessWidget {
+class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key, required this.availableMeals});
   final List<Meal> availableMeals;
 
+  @override
+  State<CategoriesScreen> createState() => _CategoriesScreenState();
+}
+
+class _CategoriesScreenState extends State<CategoriesScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _animationController;
+
+  //adding animation to the categories screen
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 300),
+      lowerBound: 0,
+      upperBound: 1,
+    );
+  }
+
   //lets add a function to push a screen in to the available stack of screens
-  // we want to display hte meal details in each category so on _selectcategory function we accept the type of category that was tapped
   void _selectCategory(BuildContext context, Category category) {
     //now we want to get a list of meals with A Category of category
 
-    final filteredMeals = availableMeals
+    final filteredMeals = widget.availableMeals
         .where((meal) => meal.categories.contains(category.id))
         .toList();
     Navigator.of(context).push(MaterialPageRoute(
