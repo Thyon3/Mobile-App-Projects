@@ -49,31 +49,34 @@ class _CategoriesScreenState extends State<CategoriesScreen>
   Widget build(context) {
     // if you are building a multi screen app then every screen should use a scaffold widget to return
     return AnimatedBuilder(
-      animation: _animationController,
-      child: GridView(
-        // creates a  grid view element with two columns
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 3 / 2,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
+        animation: _animationController,
+        child: GridView(
+          // creates a  grid view element with two columns
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 3 / 2,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+          ),
+          padding: EdgeInsets.all(16),
+          children: [
+            // availbalbleCategories.map(category) =>( CategoryGridItem(catgory: category)).toList();  we can also use map
+            for (final category in availableCategories)
+              CategoryGridItem(
+                category: category,
+                onSelectCategory: () {
+                  _selectCategory(context, category);
+                },
+              )
+          ],
         ),
-        padding: EdgeInsets.all(16),
-        children: [
-          // availbalbleCategories.map(category) =>( CategoryGridItem(catgory: category)).toList();  we can also use map
-          for (final category in availableCategories)
-            CategoryGridItem(
-              category: category,
-              onSelectCategory: () {
-                _selectCategory(context, category);
-              },
-            )
-        ],
-      ),
-      builder: (context, child) => Padding(
-        child: child,
-        padding: EdgeInsets.only(top: 100 - _animationController.value * 100),
-      ),
-    );
+        builder: (context, child) => SlideTransition(
+              position: Tween(
+                begin: Offset(0, 0.3),
+                end: Offset(0, 0),
+              ).animate(CurvedAnimation(
+                  parent: _animationController, curve: Curves.easeInOut)),
+              child: child,
+            ));
   }
 }
