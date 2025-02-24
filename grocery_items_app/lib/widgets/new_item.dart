@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:grocery_items_app/data/categories.dart';
 import 'package:grocery_items_app/models/category.dart';
 import 'package:grocery_items_app/models/grocery_item.dart';
+import 'package:http/http.dart' as http;
 
 class NewItem extends StatefulWidget {
   NewItem({super.key});
@@ -21,19 +24,27 @@ class _NewItemState extends State<NewItem> {
   var _selectedCategory = categories[Categories.vegetables]!;
 
   //function for submit the form
-  void _saveItem() {
+  void _saveItem() async {
     // save the currentState if the form is valid only
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      print(_enteredName);
-      print(_enteredQuantity);
     }
-    Navigator.of(context).pop(GroceryItem(
-        // passing the new item that is created to the GroceryList() class
-        id: DateTime.now().toString(),
-        category: _selectedCategory,
-        quantity: _enteredQuantity,
-        name: _enteredName));
+    final url = Uri.https('grocery-items-app-5cefe-default-rtdb.firebaseio.com',
+        ' grocery_items.json');
+    final response = await http.post(url,
+        headers: {'Content-Type': 'application/jason'},
+        body: json.encode({
+          'category': _selectedCategory.name,
+          'quantity': _enteredQuantity,
+          'name': _enteredName
+        }));
+
+    print(response.body);
+    print(response.statusCode);
+
+    Navigator.pop(context);
+
+    //Navigator.of(context).pop();
   }
 
   Widget build(context) {
