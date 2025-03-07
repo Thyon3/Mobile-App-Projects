@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:grocery_items_app/data/categories.dart';
 import 'package:grocery_items_app/models/category.dart';
-import 'package:grocery_items_app/models/grocery_item.dart';
 import 'package:http/http.dart' as http;
 
 class NewItem extends StatefulWidget {
-  NewItem({super.key});
+  NewItem({required this.loadItems, super.key});
+  final void Function() loadItems;
 
   @override
   State<StatefulWidget> createState() {
@@ -22,29 +22,36 @@ class _NewItemState extends State<NewItem> {
   var _enteredName = '';
   var _enteredQuantity = 1;
   var _selectedCategory = categories[Categories.vegetables]!;
-
+  var isSending = false;
   //function for submit the form
   void _saveItem() async {
     // save the currentState if the form is valid only
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+      setState(() {
+        isSending = true;
+      });
+      final url = Uri.https(
+          'grocery-items-app-5cefe-default-rtdb.firebaseio.com',
+          ' grocery_items.json');
+      final response = await http.post(url,
+          headers: {'Content-Type': 'application/jason'},
+          body: json.encode({
+            'category': _selectedCategory.name,
+            'quantity': _enteredQuantity,
+            'name': _enteredName
+          }));
+
+      print(response.body);
+      print(response.statusCode);
+
+      if (!context.mounted) {
+        return;
+      }
+
+      Navigator.pop(context);
+      widget.loadItems();
     }
-    final url = Uri.https('grocery-items-app-5cefe-default-rtdb.firebaseio.com',
-        ' grocery_items.json');
-    final response = await http.post(url,
-        headers: {'Content-Type': 'application/jason'},
-        body: json.encode({
-          'category': _selectedCategory.name,
-          'quantity': _enteredQuantity,
-          'name': _enteredName
-        }));
-
-    print(response.body);
-    print(response.statusCode);
-
-    Navigator.pop(context);
-
-    //Navigator.of(context).pop();
   }
 
   Widget build(context) {
@@ -132,12 +139,24 @@ class _NewItemState extends State<NewItem> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
-                        onPressed: () {
-                          _formKey.currentState!
-                              .reset(); //built in function to reset the values
-                        },
+                        onPressed: isSending
+                            ? null
+                            : () {
+                                _formKey.currentState!
+                                    .reset(); //built in function to reset the values
+                              },
                         child: Text('Reset')),
-                    ElevatedButton(onPressed: _saveItem, child: Text('Submit'))
+                    ElevatedButton(
+                        // we want to disable the buttons while the data is being sent to the server
+
+                        onPressed: isSending ? null : _saveItem,
+                        child: isSending
+                            ? SizedBox(
+                                width: 10,
+                                height: 10,
+                                child: CircularProgressIndicator(),
+                              )
+                            : Text('Submit'))
                   ],
                 )
               ],

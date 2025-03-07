@@ -17,6 +17,8 @@ class GroceryList extends StatefulWidget {
 }
 
 class _GroceryListState extends State<GroceryList> {
+  var isLoading = true;
+  String? _error;
   List<GroceryItem> _groceryItems = [];
   // call the loadItems function inside of the initstate cause it is some intialization work
 
@@ -24,36 +26,64 @@ class _GroceryListState extends State<GroceryList> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    loadItems();
+    _loadItems();
   }
 
-  void loadItems() async {
+  void _loadItems() async {
     //  create a new url to the firebase database
     final url = Uri.https('grocery-items-app-5cefe-default-rtdb.firebaseio.com',
-        'grocery_items.json');
-    //use the get method to extrace the data from the database and we have to store the data came back to use it
-    final response = await http.get(url);
-    final Map<String, dynamic> ListData = json.decode(response.body);
-    final List<GroceryItem> _loadedItems = [];
-    for (final item in ListData.entries) {
-      final category = categories.entries
-          .firstWhere((element) => element.value.name == item.value['category'])
-          .value;
-      _loadedItems.add(GroceryItem(
-          id: item.key,
-          category: category,
-          quantity: item.value['quantity'],
-          name: item.value['name']));
+        ' grocery_items.json');
+
+    // so we can use a try catch block for error handling
+
+    try {
+      //use the get method to extrace the data from the database and we have to store the data came back to use it
+      final response = await http.get(url);
+      // manage errors when something is wrong during fetching data
+      if (response.statusCode >= 400) {
+        setState(() {
+          _error = 'failed to fetch data! please try again later';
+        });
+      }
+      //
+      if (response.body == 'null') {
+        setState(() {
+          isLoading =
+              false; // cause we have done fetching data it has already returned a null value
+        });
+        return;
+      }
+      final Map<String, dynamic> ListData = json.decode(response.body);
+      final List<GroceryItem> _loadedItems = [];
+      for (final item in ListData.entries) {
+        final category = categories.entries
+            .firstWhere(
+                (element) => element.value.name == item.value['category'])
+            .value;
+        _loadedItems.add(GroceryItem(
+            id: item.key,
+            category: category,
+            quantity: item.value['quantity'],
+            name: item.value['name']));
+      }
+      setState(() {
+        _groceryItems = _loadedItems;
+        isLoading = false;
+      });
+    } catch (error) {
+      setState(() {
+        _error = 'failed to fetch data! please try again later';
+      });
     }
-    setState(() {
-      _groceryItems = _loadedItems;
-    });
   }
 
   void addItem() async {
-    // accepting teh new Item from the new_item.dart and storing it inside of newItem variable
-    final newItem = await Navigator.of(context)
-        .push<GroceryItem>(MaterialPageRoute(builder: (context) => NewItem()));
+    // accepting teh new Item from the new_item.dart and storing it inside of n2ewItem variable
+    final newItem =
+        await Navigator.of(context).push<GroceryItem>(MaterialPageRoute(
+            builder: (context) => NewItem(
+                  loadItems: _loadItems,
+                )));
 
     // add the new item if it is not null
     if (newItem == null) {
@@ -63,7 +93,7 @@ class _GroceryListState extends State<GroceryList> {
         _groceryItems.add(newItem);
       });
     }
-    loadItems();
+    _loadItems();
   }
 
   // remove item
@@ -78,8 +108,19 @@ class _GroceryListState extends State<GroceryList> {
     Widget mainContent = const Center(
       child: Text('you have not Grocery Item Try to add some'),
     );
+    if (isLoading) {
+      mainContent = Center(
+        child: CircularProgressIndicator(),
+      );
+    }
 
-    if (_groceryItems != null) {
+    if (_error != null) {
+      mainContent = Center(
+        child: Text(_error!),
+      );
+    }
+
+    if (_groceryItems.isNotEmpty) {
       mainContent = ListView.builder(
         itemCount: _groceryItems.length,
         itemBuilder: (ctx, index) => Dismissible(
